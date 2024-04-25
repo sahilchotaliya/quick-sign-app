@@ -12,8 +12,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function startPosition(e) {
         drawing = true;
-        lastX = e.touches ? e.touches[0].clientX - canvas.offsetLeft : e.offsetX;
-        lastY = e.touches ? e.touches[0].clientY - canvas.offsetTop : e.offsetY;
+        if (e.touches) {
+            var rect = canvas.getBoundingClientRect();
+            lastX = e.touches[0].clientX - rect.left;
+            lastY = e.touches[0].clientY - rect.top;
+        } else {
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        }
     }
 
     function draw(e) {
@@ -21,8 +27,14 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
-        var currentX = e.touches ? e.touches[0].clientX - canvas.offsetLeft : e.offsetX;
-        var currentY = e.touches ? e.touches[0].clientY - canvas.offsetTop : e.offsetY;
+        if (e.touches) {
+            var rect = canvas.getBoundingClientRect();
+            var currentX = e.touches[0].clientX - rect.left;
+            var currentY = e.touches[0].clientY - rect.top;
+        } else {
+            var currentX = e.offsetX;
+            var currentY = e.offsetY;
+        }
         ctx.lineTo(currentX, currentY);
         ctx.strokeStyle = colorSelect.value;
         ctx.lineWidth = sizeSelect.value;
