@@ -5,50 +5,56 @@ document.addEventListener("DOMContentLoaded", function () {
     var downloadButton = document.getElementById('download-btn');
     var sizeSelect = document.getElementById('size-select');
     var colorSelect = document.getElementById('color-select');
-
     var drawing = false;
     var lastX = 0;
     var lastY = 0;
-
+  
     function startPosition(e) {
-        drawing = true;
-        if (e.touches) {
-            var rect = canvas.getBoundingClientRect();
-            lastX = e.touches[0].clientX - rect.left;
-            lastY = e.touches[0].clientY - rect.top;
-        } else {
-            lastX = e.offsetX;
-            lastY = e.offsetY;
-        }
+      e.preventDefault();
+      drawing = true;
+      if (e.touches) {
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+      } else {
+        lastX = e.offsetX || e.clientX - canvas.offsetLeft;
+        lastY = e.offsetY || e.clientY - canvas.offsetTop;
+      }
     }
-
+  
     function draw(e) {
-        if (!drawing) return;
-        e.preventDefault();
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        if (e.touches) {
-            var rect = canvas.getBoundingClientRect();
-            var currentX = e.touches[0].clientX - rect.left;
-            var currentY = e.touches[0].clientY - rect.top;
-        } else {
-            var currentX = e.offsetX;
-            var currentY = e.offsetY;
+      if (!drawing) return;
+      e.preventDefault();
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+  
+      if (e.touches) {
+        for (let i = 0; i < e.touches.length; i++) {
+          const touch = e.touches[i];
+          const currentX = touch.clientX;
+          const currentY = touch.clientY;
+          ctx.lineTo(currentX, currentY);
+          lastX = currentX;
+          lastY = currentY;
         }
+      } else {
+        const currentX = e.offsetX || e.clientX - canvas.offsetLeft;
+        const currentY = e.offsetY || e.clientY - canvas.offsetTop;
         ctx.lineTo(currentX, currentY);
-        ctx.strokeStyle = colorSelect.value;
-        ctx.lineWidth = sizeSelect.value;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.stroke();
         lastX = currentX;
         lastY = currentY;
+      }
+  
+      ctx.strokeStyle = colorSelect.value;
+      ctx.lineWidth = sizeSelect.value;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
     }
-
+  
     function endPosition() {
-        drawing = false;
+      drawing = false;
     }
-
+  
     canvas.addEventListener('mousedown', startPosition);
     canvas.addEventListener('touchstart', startPosition);
     canvas.addEventListener('mousemove', draw);
@@ -57,18 +63,18 @@ document.addEventListener("DOMContentLoaded", function () {
     canvas.addEventListener('mouseleave', endPosition);
     canvas.addEventListener('touchend', endPosition);
     canvas.addEventListener('touchcancel', endPosition);
-
+  
     clearButton.addEventListener('click', function () {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
-
+  
     downloadButton.addEventListener('click', function () {
-        var image = canvas.toDataURL('image/png');
-        var link = document.createElement('a');
-        link.download = 'signature.png';
-        link.href = image;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      var image = canvas.toDataURL('image/png');
+      var link = document.createElement('a');
+      link.download = 'signature.png';
+      link.href = image;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     });
-});
+  });
