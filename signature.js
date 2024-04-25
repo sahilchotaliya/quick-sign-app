@@ -10,47 +10,49 @@ document.addEventListener("DOMContentLoaded", function () {
     var lastY = 0;
   
     function startPosition(e) {
-      e.preventDefault();
-      drawing = true;
-      if (e.touches) {
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-      } else {
-        lastX = e.offsetX || e.clientX - canvas.offsetLeft;
-        lastY = e.offsetY || e.clientY - canvas.offsetTop;
+        e.preventDefault();
+        drawing = true;
+        if (e.touches) {
+          const rect = canvas.getBoundingClientRect();
+          const touch = e.touches[0];
+          lastX = (touch.clientX - rect.left) / (rect.right - rect.left) * canvas.width;
+          lastY = (touch.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height;
+        } else {
+          lastX = e.offsetX || e.clientX - canvas.offsetLeft;
+          lastY = e.offsetY || e.clientY - canvas.offsetTop;
+        }
       }
-    }
-  
-    function draw(e) {
-      if (!drawing) return;
-      e.preventDefault();
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-  
-      if (e.touches) {
-        for (let i = 0; i < e.touches.length; i++) {
-          const touch = e.touches[i];
-          const currentX = touch.clientX;
-          const currentY = touch.clientY;
+      
+      function draw(e) {
+        if (!drawing) return;
+        e.preventDefault();
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+      
+        if (e.touches) {
+          const rect = canvas.getBoundingClientRect();
+          for (let i = 0; i < e.touches.length; i++) {
+            const touch = e.touches[i];
+            const currentX = (touch.clientX - rect.left) / (rect.right - rect.left) * canvas.width;
+            const currentY = (touch.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height;
+            ctx.lineTo(currentX, currentY);
+            lastX = currentX;
+            lastY = currentY;
+          }
+        } else {
+          const currentX = e.offsetX || e.clientX - canvas.offsetLeft;
+          const currentY = e.offsetY || e.clientY - canvas.offsetTop;
           ctx.lineTo(currentX, currentY);
           lastX = currentX;
           lastY = currentY;
         }
-      } else {
-        const currentX = e.offsetX || e.clientX - canvas.offsetLeft;
-        const currentY = e.offsetY || e.clientY - canvas.offsetTop;
-        ctx.lineTo(currentX, currentY);
-        lastX = currentX;
-        lastY = currentY;
+      
+        ctx.strokeStyle = colorSelect.value;
+        ctx.lineWidth = sizeSelect.value;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
       }
-  
-      ctx.strokeStyle = colorSelect.value;
-      ctx.lineWidth = sizeSelect.value;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-    }
-  
     function endPosition() {
       drawing = false;
     }
