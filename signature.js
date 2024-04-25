@@ -10,34 +10,41 @@ document.addEventListener("DOMContentLoaded", function () {
     var lastX = 0;
     var lastY = 0;
 
-    canvas.addEventListener('mousedown', function (e) {
+    function startPosition(e) {
         drawing = true;
-        lastX = e.offsetX;
-        lastY = e.offsetY;
-    });
+        lastX = e.touches ? e.touches[0].clientX - canvas.offsetLeft : e.offsetX;
+        lastY = e.touches ? e.touches[0].clientY - canvas.offsetTop : e.offsetY;
+    }
 
-    canvas.addEventListener('mousemove', function (e) {
-        if (drawing) {
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.strokeStyle = colorSelect.value;
-            ctx.lineWidth = sizeSelect.value;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.stroke();
-            lastX = e.offsetX;
-            lastY = e.offsetY;
-        }
-    });
+    function draw(e) {
+        if (!drawing) return;
+        e.preventDefault();
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        var currentX = e.touches ? e.touches[0].clientX - canvas.offsetLeft : e.offsetX;
+        var currentY = e.touches ? e.touches[0].clientY - canvas.offsetTop : e.offsetY;
+        ctx.lineTo(currentX, currentY);
+        ctx.strokeStyle = colorSelect.value;
+        ctx.lineWidth = sizeSelect.value;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        lastX = currentX;
+        lastY = currentY;
+    }
 
-    canvas.addEventListener('mouseup', function () {
+    function endPosition() {
         drawing = false;
-    });
+    }
 
-    canvas.addEventListener('mouseleave', function () {
-        drawing = false;
-    });
+    canvas.addEventListener('mousedown', startPosition);
+    canvas.addEventListener('touchstart', startPosition);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('mouseup', endPosition);
+    canvas.addEventListener('mouseleave', endPosition);
+    canvas.addEventListener('touchend', endPosition);
+    canvas.addEventListener('touchcancel', endPosition);
 
     clearButton.addEventListener('click', function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -53,4 +60,3 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.removeChild(link);
     });
 });
-  

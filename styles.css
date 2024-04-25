@@ -1,45 +1,81 @@
+/* Common styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
 }
 
 .signature-container {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 20px;
+    padding: 0 10px; 
 }
 
 .signature-pad {
     border: 2px solid #333;
     background-color: #fff;
+    width: 100%; 
+    max-width: 600px; 
+    margin: 0 auto; 
 }
 
 .options {
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 label {
-    font-size: 18px;
-    margin-right: 10px;
+    font-size: 16px; 
+    margin-right: 5px; 
 }
 
 select {
     padding: 8px 10px;
-    font-size: 16px;
+    font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    margin-right: 10px; 
 }
 
 button {
     margin-top: 20px;
     padding: 10px 20px;
-    font-size: 18px;
+    font-size: 16px; 
     border: none;
     background-color: #007bff;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
+    display: block;
+    width: 100%; 
+    max-width: 200px; 
+    margin: 10px auto; 
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    .signature-container {
+        padding: 0 20px; 
+    }
+
+    .signature-pad {
+        max-width: 100%; 
+    }
+
+    label,
+    select {
+        font-size: 14px; 
+    }
+
+    button {
+        font-size: 14px; 
+        max-width: 300px; 
+    }
 }
